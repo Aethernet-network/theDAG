@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  /* Deep space palette */
+  --bg-void: #04060e;
+  --bg-surface: #0a0e1a;
+  --bg-elevated: #111728;
+  --bg-panel: #0d1220;
+  
+  /* Metabolic gradient: outer (cool) → inner (warm) */
+  --meta-outer: #00e5cc;     /* teal - shallow/new */
+  --meta-mid: #6366f1;       /* indigo - mid-depth */
+  --meta-deep: #f97316;      /* orange - deep verified */
+  --meta-core: #ef4444;      /* red - maximum depth */
+  
+  /* Accent / UI */
+  --accent-primary: #00e5cc;
+  --accent-secondary: #6366f1;
+  --accent-warn: #f97316;
+  --accent-danger: #ef4444;
+  --accent-dim: #1e293b;
+  
+  /* Text */
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-dim: #475569;
+  --text-bright: #f1f5f9;
+  
+  /* Glow */
+  --glow-teal: 0 0 20px rgba(0, 229, 204, 0.3);
+  --glow-indigo: 0 0 20px rgba(99, 102, 241, 0.3);
+  --glow-orange: 0 0 20px rgba(249, 115, 22, 0.3);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #080a12;
+  color: #e2e8f0;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+/* Mono text utility */
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Pulse animation for live data */
+@keyframes metabolic-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes glow-breathe {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.4); }
+}
+
+.animate-pulse-slow { animation: metabolic-pulse 3s ease-in-out infinite; }
+.animate-glow { animation: glow-breathe 2s ease-in-out infinite; }
+
+@keyframes slideInRight {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
