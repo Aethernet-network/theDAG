@@ -32,7 +32,8 @@ const TYPE_CONFIG = {
   convergence: { color: '#22bb88', emissive: '#00ff88', label: 'CONVERGENCE',  opacity: 0.30 },
 }
 
-function GlassSlide({ index, total, type, restX, restY, restZ, restRotZ, progress, eventId, onSlideHover }) {
+// Each slide stacks straight down below the block in a clean vertical line
+function GlassSlide({ index, total, type, restY, progress, eventId, onSlideHover }) {
   const meshRef = useRef()
   const cfg = TYPE_CONFIG[type]
   const [hovered, setHovered] = useState(false)
@@ -62,23 +63,18 @@ function GlassSlide({ index, total, type, restX, restY, restZ, restRotZ, progres
     if (!meshRef.current) return
     const p = progress.current[index] || 0
 
-    // Hover animation: slide rises up
+    // Hover animation: slide pops out to the right
     const hoverTarget = hovered ? 1 : 0
-    hoverProgress.current += (hoverTarget - hoverProgress.current) * Math.min(delta * 8, 1)
+    hoverProgress.current += (hoverTarget - hoverProgress.current) * Math.min(delta * 10, 1)
     const hp = hoverProgress.current
 
-    // Rest position with entrance animation
-    const x = restX * p
-    const y = (restY * p) + (hp * 4.5)  // lift up on hover
-    const z = restZ * p
+    // Stack straight down, pop right on hover
+    meshRef.current.position.set(hp * 5, restY * p, -0.5)
+    meshRef.current.rotation.z = 0
 
-    meshRef.current.position.set(x, y, z)
-    meshRef.current.rotation.z = restRotZ * p * (1 - hp * 0.8) // flatten rotation on hover
-
-    // Opacity boost on hover
     const mat = meshRef.current.material
-    mat.opacity = (cfg.opacity + hp * 0.25) * p
-    mat.emissiveIntensity = (0.3 + hp * 1.2) * p
+    mat.opacity = (cfg.opacity + hp * 0.3) * p
+    mat.emissiveIntensity = (0.4 + hp * 1.5) * p
 
     meshRef.current.visible = p > 0.01
   })
@@ -91,11 +87,11 @@ function GlassSlide({ index, total, type, restX, restY, restZ, restRotZ, progres
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
       >
-        <boxGeometry args={[6.5, 4, 0.08]} />
+        <boxGeometry args={[6.5, 0.6, 0.06]} />
         <meshStandardMaterial
           color={cfg.color}
           emissive={cfg.emissive}
-          emissiveIntensity={0.3}
+          emissiveIntensity={0.4}
           transparent
           opacity={0}
           roughness={0.15}
@@ -108,7 +104,7 @@ function GlassSlide({ index, total, type, restX, restY, restZ, restRotZ, progres
       {/* Trajectory data overlay — shown on hover */}
       {hovered && (
         <Html
-          position={[restX, restY + 5.5, restZ]}
+          position={[8, restY, 0]}
           transform
           distanceFactor={45}
           zIndexRange={[10, 0]}
@@ -154,20 +150,17 @@ export default function GlassSlides({ event, position, isSelected }) {
     const count = 8 + Math.floor(rand() * 8) // 8-15
     const result = []
 
+    // Stack below the block: start just under the block bottom edge (-2.5 for half-height)
+    // and step down uniformly so they form a clean vertical list
+    const startY = -3.2
+    const stepY = 0.75
+
     for (let i = 0; i < count; i++) {
       const r = rand()
       const type = r < 0.7 ? 'deadEnd' : r < 0.85 ? 'pivot' : 'convergence'
+      const restY = startY - i * stepY
 
-      // Fan out: offset right and slightly down, like tabs in a filing cabinet
-      const fanDir = rand() > 0.5 ? 1 : -1
-      const restX = fanDir * (0.3 + i * 0.35)  // spread horizontally
-      const restY = -(0.2 + i * 0.25)           // cascade down slightly
-      const restZ = -(0.8 + i * 0.25)           // stack behind
-
-      const rotStep = (2 + rand() * 3) * (Math.PI / 180) // 2-5 degree tilt
-      const restRotZ = rotStep * (i + 1) * fanDir
-
-      result.push({ type, restX, restY, restZ, restRotZ, index: i, count })
+      result.push({ type, restY, index: i, count })
     }
     return result
   }, [event.id])
@@ -217,10 +210,7 @@ export default function GlassSlides({ event, position, isSelected }) {
           index={slide.index}
           total={slide.count}
           type={slide.type}
-          restX={slide.restX}
           restY={slide.restY}
-          restZ={slide.restZ}
-          restRotZ={slide.restRotZ}
           progress={progress}
           eventId={event.id}
           onSlideHover={handleSlideHover}
