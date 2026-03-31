@@ -3,7 +3,7 @@ import { useExplorerStore } from '../stores/explorerStore'
 import EventNode, { getDepthColor } from './EventNode'
 import CausalConnection from './CausalConnection'
 import ElectricalParticles from './ElectricalParticles'
-import OrganicRoots from './OrganicRoots'
+import GlassSlides from './GlassSlides'
 import TraceLine from './TraceLine'
 
 export default function MetabolicDisc() {
@@ -131,10 +131,10 @@ export default function MetabolicDisc() {
         <TraceLine chain={traceChain} />
       )}
 
-      {/* Organic roots — ONLY on selected event (perf: was rendering on all 500) */}
+      {/* Glass slides — trajectory exploration behind selected block */}
       {layers.exploration && selectedEvent && (
-        <OrganicRoots
-          key={`root-${selectedEvent.id}`}
+        <GlassSlides
+          key={`slides-${selectedEvent.id}`}
           event={selectedEvent}
           position={selectedEvent.position}
           isSelected={true}
